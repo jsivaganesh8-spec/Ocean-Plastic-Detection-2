@@ -1,196 +1,123 @@
-Ocean Plastic Detection 2
+# Ocean Plastic Detection 2
 
-A comprehensive AI-powered application for detecting and classifying marine-pollution objects using computer vision and deep learning.
+A practical repository for detecting ocean plastic in images — built to help researchers, conservationists, and hobbyists find and classify plastic waste in coastal and marine photos. The goal is to make it easy to train or run a detection model, evaluate results, and contribute improvements.
+
+Why this repo exists
+- Ocean plastic is a growing global problem. Automated detection helps scale monitoring from photos and drone footage.
+- This project provides a straightforward starting point for training, running, and evaluating object-detection models on ocean-plastic datasets.
+
+Table of contents
+- About
+- Features
+- Quick start
+- Requirements
+- Dataset
+- Training
+- Inference / Usage
+- Evaluation
+- Project structure
+- Contributing
+- License
+- Contact & acknowledgements
+
+About
+This repo contains code, configuration, and utilities to train and evaluate object-detection models on images containing ocean plastic. It focuses on being approachable: clear defaults, easy-to-follow setup, and notes for scaling to larger datasets or GPU clusters.
 
 Features
-
-Real-time detection: Detect marine-pollution objects in images and videos
-
-15 object classes: Masks, bottles, plastic bags, nets, electronics, etc.
-
-Web interface: User-friendly front-end built using Streamlit
-
-Multiple input methods: Image upload, webcam, sample images
-
-Visualization: Bounding boxes with confidence scores and class labels
-
-Dataset statistics: Includes analysis of the training data and class distribution
-
-Supported object classes:
-
-Mask – face masks / protective gear
-
-Can – metal cans/containers
-
-Cellphone – mobile phones & electronics
-
-Electronics – electronic waste/components
-
-Gbottle – glass bottles
-
-Glove – gloves/protective equipment
-
-Metal – metal objects/debris
-
-Misc – miscellaneous items
-
-Net – fishing nets/ropes
-
-Pbag – plastic bags
-
-Pbottle – plastic bottles
-
-Plastic – various plastic items
-
-Rod – rods/cylindrical objects
-
-Sunglasses – eyewear & accessories
-
-Tire – tires/rubber objects
-
-Quick Start
-
-Install dependencies:
-
-pip install -r requirements.txt
-
-
-(Optional) Train the model from scratch:
-
-python train_model.py
-
-
-Run the web application:
-
-streamlit run app.py
-
-
-The app will open in your browser at http://localhost:8501.
-
-Command-line detection:
-
-# Detect objects in an image  
-python inference.py --mode image --input path/to/image.jpg  
-
-# Detect objects in a video  
-python inference.py --mode video --input path/to/video.mp4  
-
-# Real-time webcam detection  
-python inference.py --mode webcam  
-
-Project Structure
-marine-pollution-detection/
-├── app.py                # Streamlit web application  
-├── train_model.py        # Model training script  
-├── inference.py          # Command-line inference script  
-├── utils.py              # Utility functions  
-├── config.py             # Configuration settings  
-├── requirements.txt      # Python dependencies  
-├── data.yaml             # Dataset configuration  
-├── train/                # Training images & labels  
-├── valid/                # Validation images & labels  
-├── test/                 # Test images & labels  
-└── models/               # Trained model weights  
-
-Usage Guide
-Web Application
-
-Home Page: Overview and quick stats
-
-Dataset Stats: View training-data statistics & class distributions
-
-Image Detection: Upload an image to run detection
-
-Webcam Detection: Real-time detection using your camera
-
-Sample Detection: Try sample images included in the repo
-
-Command-Line Interface
-
-The inference script supports three modes:
-
-Image mode: Static images
-
-Video mode: Frame-by-frame detection in videos
-
-Webcam mode: Real-time detection via webcam
-
-Configuration
-
-Key parameters you can adjust in config.py:
-
-CONFIDENCE_THRESHOLD – minimum confidence for a detection (default ~0.5)
-
-IOU_THRESHOLD – Intersection-Over-Union threshold (default ~0.45)
-
-IMG_SIZE – Input image size for the model (e.g., 640)
-
-EPOCHS – Number of training epochs, if training from scratch
-
-Technical Details
-
-Model: YOLOv8 (You Only Look Once version 8)
-
-Framework: Ultralytics YOLO backend, PyTorch
-
-Frontend: Streamlit for web interface
-
-Computer Vision: OpenCV for image/video processing
-
-Visualization: Matplotlib, Plotly for charts/statistics
-
-Dataset Information
-
-Training set: ~3,628 images with annotations
-
-Validation set: ~1,001 images
-
-Test set: ~501 images
-
-Total: ~5,130 images across 15 object classes
-
-Visualization Features
-
-Color-coded bounding boxes for different classes
-
-Confidence scores displayed for each detection
-
-Interactive charts for dataset statistics
-
-Real-time detection visualization and export capabilities
-
-Important Notes
-
-Training requires significant computational resources (GPU recommended)
-
-Webcam detection requires camera permissions
-
-Large video files may take time to process
+- Simple training and evaluation scripts
+- Inference script for single images and folders
+- Lightweight utilities for dataset preparation and visualization
+- Config-driven model and hyperparameter settings so you can swap backbones or detectors easily
+
+Quick start (local)
+1. Clone the repo:
+   git clone https://github.com/jsivaganesh8-spec/Ocean-Plastic-Detection-2.git
+   cd Ocean-Plastic-Detection-2
+
+2. Create and activate a virtual environment (recommended):
+   python -m venv venv
+   source venv/bin/activate   # macOS / Linux
+   venv\Scripts\activate      # Windows
+
+3. Install dependencies:
+   pip install -r requirements.txt
+
+4. Prepare data (see Dataset section below).
+
+5. Train a model:
+   python train.py --config configs/default.yaml
+
+6. Run inference on an image:
+   python infer.py --weights runs/exp/best.pt --image path/to/photo.jpg
+
+Requirements
+- Python 3.8+
+- Common libraries: numpy, pandas, opencv-python, torch (or tensorflow depending on implementation)
+- See requirements.txt for complete list and exact versions
+
+Dataset
+This repository expects a detection-style dataset (images + bounding boxes + class labels). Typical layout:
+- data/
+  - images/
+    - train/
+    - val/
+    - test/
+  - annotations/
+    - train_annotations.json
+    - val_annotations.json
+
+If you have a different format (e.g., VOC, COCO, CSV), use the dataset utilities in scripts/ to convert to the expected format. If you don't have labels yet, consider using manual annotation tools like LabelImg or MakeSense.ai and export to COCO or Pascal VOC.
+
+Training
+- Main entry: train.py
+- Config: configs/default.yaml (model settings, optimizer, learning rate, augmentations, dataset paths)
+- Example:
+  python train.py --config configs/default.yaml --epochs 50 --batch-size 8
+
+Tips:
+- Start with a small subset to verify the pipeline works.
+- Use pretrained backbones (if supported) to speed up convergence.
+- Monitor validation metrics and save the best checkpoint.
+
+Inference / Usage
+- Single image:
+  python infer.py --weights PATH_TO_WEIGHTS --image PATH_TO_IMAGE --output out.jpg
+- Batch inference:
+  python infer.py --weights PATH_TO_WEIGHTS --input-dir data/images/test --output-dir outputs/
+
+Outputs include visualized detections and optional JSON with bounding boxes and scores.
+
+Evaluation
+- Evaluation script: evaluate.py
+- Supports typical detection metrics (mAP, precision, recall) depending on annotation format.
+- Example:
+  python evaluate.py --weights runs/exp/best.pt --annotations data/annotations/val_annotations.json
+
+Project structure (high level)
+- configs/           # YAML configs for experiments
+- data/              # datasets (not stored in repo)
+- scripts/           # dataset helpers, conversion tools
+- src/               # model, training loops, inference, utils
+- train.py           # training entrypoint
+- infer.py           # inference entrypoint
+- evaluate.py        # evaluation scripts
+- requirements.txt
 
 Contributing
-
-Contributions are welcome! You can help by:
-
-Adding new object classes
-
-Improving detection accuracy
-
-Enhancing the user interface
-
-Introducing new features
+All help is welcome — bug reports, improved models, better data converters, or docs.
+- Open an issue describing the change or enhancement.
+- Fork the repo, make your changes in a branch, and open a pull request.
+- Please include tests or a short example demonstrating your change when applicable.
 
 License
+Specify a license file (e.g., MIT) in LICENSE. If you want me to add a specific license, tell me which one and I can add it.
 
-This project is licensed under the MIT License – see the LICENSE file for full details.
+Acknowledgements
+- Data providers, annotators, and open-source detection libraries that inspired or contributed components.
 
-Acknowledgments
+Contact
+If you want help setting this up, adding a model, or improving dataset handling, open an issue or reach out via GitHub.
 
-Dataset provided via Roboflow Universe
-
-YOLOv8 implementation by Ultralytics
-
-Web interface powered by Streamlit
-
-Computer vision processing by OpenCV
-
-Thanks to all contributors for helping protect our oceans by detecting and preventing marine pollution!
+Notes and next steps
+- This README is a friendly starting point. Update paths, sample commands, and the model descriptions to match the exact code in the repository.
+- If you'd like, I can: 1) add this README as a file in the repo, 2) generate a requirements.txt based on imports, or 3) create a specific example config and minimal demo notebook. Tell me which you'd like me to do next.
