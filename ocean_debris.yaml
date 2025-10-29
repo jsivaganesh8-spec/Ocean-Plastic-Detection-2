@@ -1,0 +1,5 @@
+path: c:/Users/jsiva/Downloads/archive (2)
+train: train
+val: valid
+names:
+  0: Plastics Trash
